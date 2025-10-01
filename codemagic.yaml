@@ -1,42 +1,43 @@
 workflows:
-  ios-workflow:
-    name: iOS Workflow
+  android-workflow:
+    name: Android Workflow
     max_build_duration: 120
-    instance_type: mac_mini_m1
-    integrations:
-      app_store_connect: codemagic
+    instance_type: linux_x2
     environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.signalnoise.app
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play
       vars:
-        XCODE_WORKSPACE: "ios/App/App.xcworkspace"
-        XCODE_SCHEME: "App"
-        BUNDLE_ID: "com.signalnoise.app"
-        APP_STORE_APPLE_ID: 1234567890
+        PACKAGE_NAME: "com.signalnoise.app"
       node: 18
-      xcode: latest
-      cocoapods: default
+      java: 17
     scripts:
       - name: Install npm dependencies
         script: |
           npm install
-      - name: Install CocoaPods dependencies
+      - name: Build Angular app
         script: |
-          cd ios/App && pod install
-      - name: Set up code signing settings on Xcode project
+          npm run build
+      - name: Update dependencies and copy web assets to native project
         script: |
-          xcode-project use-profiles
-      - name: Build iOS app
+          npx cap sync android
+      - name: Set Android version
         script: |
-          xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+          BUILD_NUMBER=$(($(google-play get-latest-build-number \
+            --package-name "$PACKAGE_NAME" \
+            --tracks=alpha,beta,production) + 1))
+          cd android
+          ./gradlew bundleRelease \
+            -PversionCode=$BUILD_NUMBER \
+            -PversionName=1.0.$BUILD_NUMBER
+      - name: Build Android App Bundle
+        script: |
+          cd android
+          ./gradlew bundleRelease
     artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.app
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+      - android/app/build/outputs/**/*.aab
+      - android/app/build/outputs/**/*.apk
     publishing:
       email:
         recipients:
@@ -44,9 +45,7 @@ workflows:
         notify:
           success: true
           failure: true
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
-        beta_groups:
-          - App Beta Testers
-        submit_to_app_store: false
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true

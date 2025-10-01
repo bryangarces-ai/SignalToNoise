@@ -1,157 +1,167 @@
-<div class="history-container">
+<div class="min-vh-100 d-flex flex-column bg-light">
   <!-- Header -->
-  <header class="history-header">
-    <a routerLink="/" class="back-button">← Back</a>
-    <h1>Task History</h1>
-    <button class="btn-add-date" (click)="openDatePicker()">
-      📅 Add Tasks to Date
-    </button>
+  <header class="text-white py-3 shadow-sm" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <a routerLink="/" class="btn btn-light btn-sm">← Back</a>
+        <h1 class="h3 mb-0 text-white">Task History</h1>
+        <button class="btn btn-light btn-sm" (click)="openDatePicker()">
+          📅 Add Tasks
+        </button>
+      </div>
+    </div>
   </header>
 
   <!-- Main Content -->
-  <main class="history-content">
+  <main class="container flex-grow-1 my-4">
     
     @if (dateTasks().length === 0) {
-      <div class="empty-history">
-        <p>📭 No task history yet</p>
-        <p class="empty-subtitle">Start adding tasks to build your history!</p>
+      <div class="text-center py-5">
+        <p class="display-6">📭 No task history yet</p>
+        <p class="text-muted mb-4">Start adding tasks to build your history!</p>
         <button class="btn btn-primary" (click)="openDatePicker()">
           Add Tasks to a Date
         </button>
       </div>
     } @else {
       <!-- Date List -->
-      <div class="dates-list">
+      <div class="row g-3">
         @for (dateTask of dateTasks(); track dateTask.date; let i = $index) {
-          <div class="date-card" [class.expanded]="dateTask.expanded">
-            <!-- Date Header (Clickable) -->
-            <div class="date-header" (click)="toggleDate(i)">
-              <div class="date-info">
-                <h2>{{ dateTask.displayDate }}</h2>
-                <div class="date-summary">
-                  <span class="summary-item signal-summary">
-                    🎯 {{ dateTask.signalTasks.length }} Signal
-                    ({{ getCompletedCount(dateTask.signalTasks) }} done)
-                  </span>
-                  <span class="summary-item noise-summary">
-                    📝 {{ dateTask.noiseTasks.length }} Noise
-                    ({{ getCompletedCount(dateTask.noiseTasks) }} done)
-                  </span>
-                </div>
-              </div>
-              <div class="expand-icon">
-                {{ dateTask.expanded ? '▼' : '▶' }}
-              </div>
-            </div>
-
-            <!-- Expanded Content -->
-            @if (dateTask.expanded) {
-              <div class="date-content">
-                
-                <!-- Metrics Summary for this date -->
-                @if (dateTask.metrics && dateTask.metrics.total > 0) {
-                  <div class="date-metrics-summary">
-                    <h4>📊 Productivity Summary</h4>
-                    <p class="metrics-summary-message">{{ dateTask.metrics.summaryMessage }}</p>
-                    
-                    <div class="metrics-compact">
-                      <div class="compact-metric">
-                        <span class="metric-label">Planned:</span>
-                        <span class="metric-ratio signal-text">{{ dateTask.metrics.plannedSignalPercent.toFixed(0) }}%</span>
-                        <span class="metric-separator">:</span>
-                        <span class="metric-ratio noise-text">{{ dateTask.metrics.plannedNoisePercent.toFixed(0) }}%</span>
-                      </div>
-                      <div class="compact-metric">
-                        <span class="metric-label">Executed:</span>
-                        <span class="metric-ratio signal-text">{{ ((dateTask.metrics.signalDone + dateTask.metrics.noiseDone) > 0 ? (dateTask.metrics.signalDone / (dateTask.metrics.signalDone + dateTask.metrics.noiseDone) * 100) : 0).toFixed(0) }}%</span>
-                        <span class="metric-separator">:</span>
-                        <span class="metric-ratio noise-text">{{ ((dateTask.metrics.signalDone + dateTask.metrics.noiseDone) > 0 ? (dateTask.metrics.noiseDone / (dateTask.metrics.signalDone + dateTask.metrics.noiseDone) * 100) : 0).toFixed(0) }}%</span>
-                      </div>
-                      <div class="compact-metric">
-                        <span class="metric-label">Completion:</span>
-                        <span class="metric-detail">🎯 {{ dateTask.metrics.completionSignalPercent.toFixed(0) }}%</span>
-                        <span class="metric-detail">📝 {{ dateTask.metrics.completionNoisePercent.toFixed(0) }}%</span>
-                      </div>
+          <div class="col-12">
+            <div class="card shadow-sm mb-3">
+              <!-- Date Header (Clickable) -->
+              <div class="card-header bg-white cursor-pointer" (click)="toggleDate(i)" style="cursor: pointer;">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="flex-grow-1">
+                    <h2 class="h5 mb-2">{{ dateTask.displayDate }}</h2>
+                    <div class="d-flex flex-wrap gap-3 small">
+                      <span class="text-success">
+                        🎯 {{ dateTask.signalTasks.length }} Signal
+                        ({{ getCompletedCount(dateTask.signalTasks) }} done)
+                      </span>
+                      <span class="text-danger">
+                        📝 {{ dateTask.noiseTasks.length }} Noise
+                        ({{ getCompletedCount(dateTask.noiseTasks) }} done)
+                      </span>
                     </div>
                   </div>
-                }
-                
-                <!-- Signal Tasks -->
-                <div class="task-section signal-section">
-                  <h3>
-                    <span class="icon">🎯</span> Signal Tasks
-                  </h3>
-                  
-                  @if (dateTask.signalTasks.length === 0) {
-                    <p class="empty-state">No Signal tasks for this day</p>
-                  } @else {
-                    <div class="tasks-list">
-                      @for (task of dateTask.signalTasks; track task.id) {
-                        <div class="task-item" [class.task-done]="task.done">
-                          <label class="task-checkbox">
-                            <input
-                              type="checkbox"
-                              [checked]="task.done"
-                              (change)="toggleTask(task.id, dateTask.date)"
-                            />
-                            <span class="checkmark"></span>
-                          </label>
-                          <span class="task-title">{{ task.title }}</span>
-                          <button 
-                            class="btn-delete"
-                            (click)="deleteTask(task.id, dateTask.date)"
-                            title="Delete task"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
-
-                <!-- Noise Tasks -->
-                <div class="task-section noise-section">
-                  <h3>
-                    <span class="icon">📝</span> Noise Tasks
-                  </h3>
-                  
-                  @if (dateTask.noiseTasks.length === 0) {
-                    <p class="empty-state">No Noise tasks for this day</p>
-                  } @else {
-                    <div class="tasks-list">
-                      @for (task of dateTask.noiseTasks; track task.id) {
-                        <div class="task-item" [class.task-done]="task.done">
-                          <label class="task-checkbox">
-                            <input
-                              type="checkbox"
-                              [checked]="task.done"
-                              (change)="toggleTask(task.id, dateTask.date)"
-                            />
-                            <span class="checkmark"></span>
-                          </label>
-                          <span class="task-title">{{ task.title }}</span>
-                          <button 
-                            class="btn-delete"
-                            (click)="deleteTask(task.id, dateTask.date)"
-                            title="Delete task"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      }
-                    </div>
-                  }
-                </div>
-
-                <!-- Delete Date Button -->
-                <div class="date-actions">
-                  <button class="btn btn-danger-outline" (click)="deleteDate(dateTask.date)">
-                    🗑️ Delete This Day
-                  </button>
+                  <div class="fs-4">
+                    {{ dateTask.expanded ? '▼' : '▶' }}
+                  </div>
                 </div>
               </div>
-            }
+
+              <!-- Expanded Content -->
+              @if (dateTask.expanded) {
+                <div class="card-body">
+                
+                  <!-- Metrics Summary for this date -->
+                  @if (dateTask.metrics && dateTask.metrics.total > 0) {
+                    <div class="alert alert-info mb-3">
+                      <h4 class="alert-heading h6">📊 Productivity Summary</h4>
+                      <p class="mb-2 small">{{ dateTask.metrics.summaryMessage }}</p>
+                      
+                      <div class="d-flex flex-column gap-2 small">
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="fw-semibold">Planned:</span>
+                          <span class="text-success">{{ dateTask.metrics.plannedSignalPercent.toFixed(0) }}%</span>
+                          <span>:</span>
+                          <span class="text-danger">{{ dateTask.metrics.plannedNoisePercent.toFixed(0) }}%</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="fw-semibold">Executed:</span>
+                          <span class="text-success">{{ ((dateTask.metrics.signalDone + dateTask.metrics.noiseDone) > 0 ? (dateTask.metrics.signalDone / (dateTask.metrics.signalDone + dateTask.metrics.noiseDone) * 100) : 0).toFixed(0) }}%</span>
+                          <span>:</span>
+                          <span class="text-danger">{{ ((dateTask.metrics.signalDone + dateTask.metrics.noiseDone) > 0 ? (dateTask.metrics.noiseDone / (dateTask.metrics.signalDone + dateTask.metrics.noiseDone) * 100) : 0).toFixed(0) }}%</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="fw-semibold">Completion:</span>
+                          <span>🎯 {{ dateTask.metrics.completionSignalPercent.toFixed(0) }}%</span>
+                          <span>📝 {{ dateTask.metrics.completionNoisePercent.toFixed(0) }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                
+                  <!-- Signal Tasks -->
+                  <div class="mb-3">
+                    <h3 class="h6 mb-2">
+                      <span>🎯</span> Signal Tasks
+                    </h3>
+                    
+                    @if (dateTask.signalTasks.length === 0) {
+                      <p class="text-muted fst-italic small">No Signal tasks for this day</p>
+                    } @else {
+                      <div class="list-group list-group-flush">
+                        @for (task of dateTask.signalTasks; track task.id) {
+                          <div class="list-group-item d-flex align-items-center gap-2 bg-light rounded mb-2" [class.opacity-50]="task.done">
+                            <div class="form-check">
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                [checked]="task.done"
+                                [id]="'hist-signal-' + task.id"
+                                (change)="toggleTask(task.id, dateTask.date)"
+                              />
+                            </div>
+                            <span class="flex-grow-1" [class.text-decoration-line-through]="task.done" [class.text-muted]="task.done">{{ task.title }}</span>
+                            <button 
+                              class="btn btn-sm btn-link text-danger p-0 fs-4 lh-1"
+                              (click)="deleteTask(task.id, dateTask.date)"
+                              title="Delete task"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Noise Tasks -->
+                  <div class="mb-3">
+                    <h3 class="h6 mb-2">
+                      <span>📝</span> Noise Tasks
+                    </h3>
+                    
+                    @if (dateTask.noiseTasks.length === 0) {
+                      <p class="text-muted fst-italic small">No Noise tasks for this day</p>
+                    } @else {
+                      <div class="list-group list-group-flush">
+                        @for (task of dateTask.noiseTasks; track task.id) {
+                          <div class="list-group-item d-flex align-items-center gap-2 bg-light rounded mb-2" [class.opacity-50]="task.done">
+                            <div class="form-check">
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                [checked]="task.done"
+                                [id]="'hist-noise-' + task.id"
+                                (change)="toggleTask(task.id, dateTask.date)"
+                              />
+                            </div>
+                            <span class="flex-grow-1" [class.text-decoration-line-through]="task.done" [class.text-muted]="task.done">{{ task.title }}</span>
+                            <button 
+                              class="btn btn-sm btn-link text-danger p-0 fs-4 lh-1"
+                              (click)="deleteTask(task.id, dateTask.date)"
+                              title="Delete task"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Delete Date Button -->
+                  <div class="mt-3">
+                    <button class="btn btn-outline-danger btn-sm w-100" (click)="deleteDate(dateTask.date)">
+                      🗑️ Delete This Day
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
         }
       </div>
@@ -160,89 +170,91 @@
 
   <!-- Date Picker Modal -->
   @if (showDatePicker()) {
-    <div class="modal-overlay" (click)="closeDatePicker()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h2>{{ addingToDate() ? 'Add Tasks' : 'Select Date' }}</h2>
-          <button class="btn-close" (click)="closeDatePicker()">×</button>
-        </div>
+    <div class="modal d-block" style="background-color: rgba(0,0,0,0.5);" (click)="closeDatePicker()">
+      <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="modal-title h5">{{ addingToDate() ? 'Add Tasks' : 'Select Date' }}</h2>
+            <button type="button" class="btn-close" (click)="closeDatePicker()"></button>
+          </div>
 
-        <div class="modal-body">
+          <div class="modal-body">
           
-          @if (!addingToDate()) {
-            <!-- Date Selection -->
-            <div class="date-selector">
-              <label for="task-date">Select a date:</label>
-              <input
-                id="task-date"
-                type="date"
-                [(ngModel)]="selectedDate"
-                class="date-input"
-              />
-              <button 
-                class="btn btn-primary"
-                (click)="selectDateForTasks()"
-                [disabled]="!selectedDate"
-              >
-                Continue
-              </button>
-            </div>
-          } @else {
-            <!-- Task Input for Selected Date -->
-            <div class="task-input-section">
-              <p class="selected-date-display">
-                Adding tasks for: <strong>{{ taskService.formatDate(addingToDate()!) }}</strong>
-              </p>
-
-              <!-- Signal Tasks -->
-              <div class="input-group signal-input">
-                <h3>🎯 Signal Tasks</h3>
-                <div class="add-task-form">
-                  <input
-                    type="text"
-                    [(ngModel)]="newSignalTask"
-                    placeholder="Add a Signal task..."
-                    class="task-input"
-                    (keyup.enter)="addSignalTaskToDate()"
-                  />
-                  <button 
-                    class="btn btn-primary"
-                    (click)="addSignalTaskToDate()"
-                    [disabled]="!newSignalTask.trim()"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-
-              <!-- Noise Tasks -->
-              <div class="input-group noise-input">
-                <h3>📝 Noise Tasks</h3>
-                <div class="add-task-form">
-                  <input
-                    type="text"
-                    [(ngModel)]="newNoiseTask"
-                    placeholder="Add a Noise task..."
-                    class="task-input"
-                    (keyup.enter)="addNoiseTaskToDate()"
-                  />
-                  <button 
-                    class="btn btn-primary"
-                    (click)="addNoiseTaskToDate()"
-                    [disabled]="!newNoiseTask.trim()"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-
-              <div class="modal-actions">
-                <button class="btn btn-success" (click)="finishAddingTasks()">
-                  ✓ Done Adding Tasks
+            @if (!addingToDate()) {
+              <!-- Date Selection -->
+              <div class="mb-3">
+                <label for="task-date" class="form-label">Select a date:</label>
+                <input
+                  id="task-date"
+                  type="date"
+                  [(ngModel)]="selectedDate"
+                  class="form-control mb-3"
+                />
+                <button 
+                  class="btn btn-primary w-100"
+                  (click)="selectDateForTasks()"
+                  [disabled]="!selectedDate"
+                >
+                  Continue
                 </button>
               </div>
-            </div>
-          }
+            } @else {
+              <!-- Task Input for Selected Date -->
+              <div>
+                <p class="alert alert-info small">
+                  Adding tasks for: <strong>{{ taskService.formatDate(addingToDate()!) }}</strong>
+                </p>
+
+                <!-- Signal Tasks -->
+                <div class="mb-3">
+                  <h3 class="h6">🎯 Signal Tasks</h3>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      [(ngModel)]="newSignalTask"
+                      placeholder="Add a Signal task..."
+                      class="form-control"
+                      (keyup.enter)="addSignalTaskToDate()"
+                    />
+                    <button 
+                      class="btn btn-primary"
+                      (click)="addSignalTaskToDate()"
+                      [disabled]="!newSignalTask.trim()"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Noise Tasks -->
+                <div class="mb-3">
+                  <h3 class="h6">📝 Noise Tasks</h3>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      [(ngModel)]="newNoiseTask"
+                      placeholder="Add a Noise task..."
+                      class="form-control"
+                      (keyup.enter)="addNoiseTaskToDate()"
+                    />
+                    <button 
+                      class="btn btn-primary"
+                      (click)="addNoiseTaskToDate()"
+                      [disabled]="!newNoiseTask.trim()"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button class="btn btn-success w-100" (click)="finishAddingTasks()">
+                    ✓ Done Adding Tasks
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
         </div>
       </div>
     </div>

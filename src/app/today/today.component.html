@@ -1,269 +1,337 @@
-<div class="app-container">
+<div class="min-vh-100 d-flex flex-column bg-light">
   <!-- Header -->
-  <header class="app-header">
-    <h1>{{ title }}</h1>
-    <p class="subtitle">Daily Task Organizer</p>
-    <a routerLink="/history" class="btn-history">📚 History</a>
+  <header class="text-white text-center py-4 shadow-sm position-relative" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);">
+    <div class="container">
+      <h1 class="display-5 fw-bold mb-1 text-white">{{ title }}</h1>
+      <p class="small mb-1 text-white" style="opacity: 0.9;">Daily Task Organizer</p>
+      <p class="small mb-0 text-white fw-semibold" style="opacity: 0.95;">
+        📅 {{ currentDate | date:'fullDate' }}
+      </p>
+      <a routerLink="/history" class="btn btn-light btn-sm position-absolute top-0 end-0 m-3 fw-semibold">
+        📚 History
+      </a>
+    </div>
   </header>
 
-  <!-- Signal-to-Noise Ratio Dashboard -->
-  @if (metrics() && metrics()!.total > 0) {
-    <section class="metrics-dashboard">
-      <h3 class="dashboard-title">📊 Signal-to-Noise Ratio Analysis</h3>
-      
-      <!-- Summary Message -->
-      <div class="summary-message">
-        {{ metrics()!.summaryMessage }}
-      </div>
-
-      <!-- Metrics Grid -->
-      <div class="metrics-grid">
-        
-        <!-- 1. Planned Ratio Meter -->
-        <div class="metric-card">
-          <h4>📋 Planned Ratio</h4>
-          <p class="metric-description">Task distribution at start of day</p>
-          <div class="ratio-meter">
-            <div class="meter-bar">
-              <div class="meter-fill signal-fill" 
-                   [style.width.%]="metrics()!.plannedSignalPercent">
-                <span class="meter-label">{{ metrics()!.plannedSignalPercent.toFixed(0) }}%</span>
-              </div>
-              <div class="meter-fill noise-fill" 
-                   [style.width.%]="metrics()!.plannedNoisePercent">
-                <span class="meter-label">{{ metrics()!.plannedNoisePercent.toFixed(0) }}%</span>
-              </div>
-            </div>
-            <div class="meter-legend">
-              <span class="legend-item signal-legend">🎯 Signal: {{ metrics()!.signalTotal }}</span>
-              <span class="legend-item noise-legend">📝 Noise: {{ metrics()!.noiseTotal }}</span>
-            </div>
-          </div>
-          <p class="metric-warning" [class.has-warning]="metrics()!.plannedRatioWarning.startsWith('⚠️')">
-            {{ metrics()!.plannedRatioWarning }}
-          </p>
-        </div>
-
-        <!-- 2. Completion Progress Bars -->
-        <div class="metric-card">
-          <h4>✅ Completion Progress</h4>
-          <p class="metric-description">How well you're finishing what you planned</p>
-          <div class="progress-bars">
-            <div class="progress-item">
-              <div class="progress-header">
-                <span>🎯 Signal Tasks</span>
-                <span class="progress-value">{{ metrics()!.signalDone }} / {{ metrics()!.signalTotal }}</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill signal-progress" 
-                     [style.width.%]="metrics()!.completionSignalPercent">
-                  <span class="progress-label">{{ metrics()!.completionSignalPercent.toFixed(0) }}%</span>
-                </div>
-              </div>
-            </div>
-            <div class="progress-item">
-              <div class="progress-header">
-                <span>📝 Noise Tasks</span>
-                <span class="progress-value">{{ metrics()!.noiseDone }} / {{ metrics()!.noiseTotal }}</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill noise-progress" 
-                     [style.width.%]="metrics()!.completionNoisePercent">
-                  <span class="progress-label">{{ metrics()!.completionNoisePercent.toFixed(0) }}%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          @if (metrics()!.completionWarning) {
-            <p class="metric-warning" [class.has-warning]="metrics()!.completionWarning.startsWith('⚠️')">
-              {{ metrics()!.completionWarning }}
-            </p>
-          }
-        </div>
-
-        <!-- 3. Effective Ratio Visualization -->
-        <div class="metric-card">
-          <h4>⚡ Effective Productivity Ratio</h4>
-          <p class="metric-description">How your actual daily energy was spent</p>
-          <div class="effective-ratio">
-            <div class="ratio-pie">
-              <div class="pie-chart" 
-                   [style.background]="'conic-gradient(var(--signal-color) 0% ' + metrics()!.effectiveSignalPercent + '%, var(--noise-color) ' + metrics()!.effectiveSignalPercent + '% 100%)'">
-              </div>
-              <div class="pie-center">
-                <div class="pie-label">
-                  <span class="pie-value signal-value">{{ metrics()!.effectiveSignalPercent.toFixed(0) }}%</span>
-                  <span class="pie-divider">:</span>
-                  <span class="pie-value noise-value">{{ metrics()!.effectiveNoisePercent.toFixed(0) }}%</span>
-                </div>
-              </div>
-            </div>
-            <div class="ratio-details">
-              <div class="ratio-detail-item">
-                <span class="detail-icon">🎯</span>
-                <span class="detail-label">Signal Done:</span>
-                <span class="detail-value">{{ metrics()!.signalDone }} / {{ metrics()!.total }}</span>
-              </div>
-              <div class="ratio-detail-item">
-                <span class="detail-icon">📝</span>
-                <span class="detail-label">Noise Done:</span>
-                <span class="detail-value">{{ metrics()!.noiseDone }} / {{ metrics()!.total }}</span>
-              </div>
-            </div>
-          </div>
-          @if (metrics()!.effectiveRatioWarning) {
-            <p class="metric-warning" [class.has-warning]="metrics()!.effectiveRatioWarning.startsWith('⚠️')">
-              {{ metrics()!.effectiveRatioWarning }}
-            </p>
-          }
-        </div>
-
-      </div>
-    </section>
-  }
-
   <!-- Main Content -->
-  <main class="main-content">
-    
-    <!-- Signal Tasks Section -->
-    <section class="task-section signal-section">
-      <div class="section-header">
-        <h2>
-          <span class="icon">🎯</span>
-          Signal
-        </h2>
-        <span class="task-count">
-          {{ getCompletedCount(signalTasks()) }} / {{ signalTasks().length }}
-        </span>
-      </div>
-      <p class="section-description">Most important tasks today</p>
+  <main class="container flex-grow-1 my-4">
+    <div class="row g-4">
+            
+      <!-- Signal Tasks Section -->
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm border-start border-success border-4 h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="h4 mb-0 d-flex align-items-center gap-2">
+                <span>🎯</span>
+                <span>Signal</span>
+              </h2>
+              <span class="badge bg-secondary rounded-pill">
+                {{ getCompletedCount(signalTasks()) }} / {{ signalTasks().length }}
+              </span>
+            </div>
+            <p class="text-muted small mb-3">Most important tasks today</p>
 
-      <!-- Add Signal Task -->
-      <div class="add-task-form">
-        <input
-          type="text"
-          [(ngModel)]="newSignalTask"
-          placeholder="Add a Signal task..."
-          class="task-input"
-          (keyup.enter)="addSignalTask()"
-        />
-        <button 
-          class="btn btn-primary"
-          (click)="addSignalTask()"
-          [disabled]="!newSignalTask.trim()"
-        >
-          Add
-        </button>
-      </div>
-
-      <!-- Signal Tasks List -->
-      <div class="tasks-list">
-        @if (signalTasks().length === 0) {
-          <p class="empty-state">No Signal tasks yet. Add your most important tasks!</p>
-        }
-        @for (task of signalTasks(); track task.id) {
-          <div class="task-item" [class.task-done]="task.done">
-            <label class="task-checkbox">
+            <!-- Add Signal Task -->
+            <div class="input-group mb-3">
               <input
-                type="checkbox"
-                [checked]="task.done"
-                (change)="toggleTask(task.id)"
+                type="text"
+                [(ngModel)]="newSignalTask"
+                placeholder="Add a Signal task..."
+                class="form-control"
+                (keyup.enter)="addSignalTask()"
               />
-              <span class="checkmark"></span>
-            </label>
-            <span class="task-title">{{ task.title }}</span>
-            <button 
-              class="btn-delete"
-              (click)="deleteTask(task.id)"
-              title="Delete task"
-            >
-              ×
-            </button>
+              <button 
+                class="btn btn-primary"
+                (click)="addSignalTask()"
+                [disabled]="!newSignalTask.trim()"
+              >
+                Add
+              </button>
+            </div>
+
+            <!-- Signal Tasks List -->
+            <div class="list-group list-group-flush">
+              @if (signalTasks().length === 0) {
+                <div class="text-center text-muted py-4 fst-italic">
+                  No Signal tasks yet. Add your most important tasks!
+                </div>
+              }
+              @for (task of signalTasks(); track task.id) {
+                <div class="list-group-item d-flex align-items-center gap-3 bg-light rounded mb-2 border" 
+                     [class.opacity-50]="task.done">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [checked]="task.done"
+                      [id]="'signal-' + task.id"
+                      (change)="toggleTask(task.id)"
+                    />
+                  </div>
+                  <span class="flex-grow-1" [class.text-decoration-line-through]="task.done" [class.text-muted]="task.done">
+                    {{ task.title }}
+                  </span>
+                  <button 
+                    class="btn btn-sm btn-link text-danger p-0 fs-4 lh-1"
+                    (click)="deleteTask(task.id)"
+                    title="Delete task"
+                  >
+                    ×
+                  </button>
+                </div>
+              }
+            </div>
+
+            @if (signalTasks().length > 0) {
+              <button class="btn btn-outline-secondary w-100 mt-3" (click)="clearSignalTasks()">
+                Clear Signal Tasks
+              </button>
+            }
           </div>
-        }
+        </div>
       </div>
 
-      @if (signalTasks().length > 0) {
-        <button class="btn btn-clear" (click)="clearSignalTasks()">
-          Clear Signal Tasks
-        </button>
-      }
-    </section>
+      <!-- Noise Tasks Section -->
+      <div class="col-12 col-lg-6">
+        <div class="card shadow-sm border-start border-danger border-4 h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 class="h4 mb-0 d-flex align-items-center gap-2">
+                <span>📝</span>
+                <span>Noise</span>
+              </h2>
+              <span class="badge bg-secondary rounded-pill">
+                {{ getCompletedCount(noiseTasks()) }} / {{ noiseTasks().length }}
+              </span>
+            </div>
+            <p class="text-muted small mb-3">Less important tasks</p>
 
-    <!-- Noise Tasks Section -->
-    <section class="task-section noise-section">
-      <div class="section-header">
-        <h2>
-          <span class="icon">📝</span>
-          Noise
-        </h2>
-        <span class="task-count">
-          {{ getCompletedCount(noiseTasks()) }} / {{ noiseTasks().length }}
-        </span>
-      </div>
-      <p class="section-description">Less important tasks</p>
-
-      <!-- Add Noise Task -->
-      <div class="add-task-form">
-        <input
-          type="text"
-          [(ngModel)]="newNoiseTask"
-          placeholder="Add a Noise task..."
-          class="task-input"
-          (keyup.enter)="addNoiseTask()"
-        />
-        <button 
-          class="btn btn-primary"
-          (click)="addNoiseTask()"
-          [disabled]="!newNoiseTask.trim()"
-        >
-          Add
-        </button>
-      </div>
-
-      <!-- Noise Tasks List -->
-      <div class="tasks-list">
-        @if (noiseTasks().length === 0) {
-          <p class="empty-state">No Noise tasks yet. Add less urgent tasks here.</p>
-        }
-        @for (task of noiseTasks(); track task.id) {
-          <div class="task-item" [class.task-done]="task.done">
-            <label class="task-checkbox">
+            <!-- Add Noise Task -->
+            <div class="input-group mb-3">
               <input
-                type="checkbox"
-                [checked]="task.done"
-                (change)="toggleTask(task.id)"
+                type="text"
+                [(ngModel)]="newNoiseTask"
+                placeholder="Add a Noise task..."
+                class="form-control"
+                (keyup.enter)="addNoiseTask()"
               />
-              <span class="checkmark"></span>
-            </label>
-            <span class="task-title">{{ task.title }}</span>
-            <button 
-              class="btn-delete"
-              (click)="deleteTask(task.id)"
-              title="Delete task"
-            >
-              ×
-            </button>
+              <button 
+                class="btn btn-primary"
+                (click)="addNoiseTask()"
+                [disabled]="!newNoiseTask.trim()"
+              >
+                Add
+              </button>
+            </div>
+
+            <!-- Noise Tasks List -->
+            <div class="list-group list-group-flush">
+              @if (noiseTasks().length === 0) {
+                <div class="text-center text-muted py-4 fst-italic">
+                  No Noise tasks yet. Add less urgent tasks here.
+                </div>
+              }
+              @for (task of noiseTasks(); track task.id) {
+                <div class="list-group-item d-flex align-items-center gap-3 bg-light rounded mb-2 border" 
+                     [class.opacity-50]="task.done">
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      [checked]="task.done"
+                      [id]="'noise-' + task.id"
+                      (change)="toggleTask(task.id)"
+                    />
+                  </div>
+                  <span class="flex-grow-1" [class.text-decoration-line-through]="task.done" [class.text-muted]="task.done">
+                    {{ task.title }}
+                  </span>
+                  <button 
+                    class="btn btn-sm btn-link text-danger p-0 fs-4 lh-1"
+                    (click)="deleteTask(task.id)"
+                    title="Delete task"
+                  >
+                    ×
+                  </button>
+                </div>
+              }
+            </div>
+
+            @if (noiseTasks().length > 0) {
+              <button class="btn btn-outline-secondary w-100 mt-3" (click)="clearNoiseTasks()">
+                Clear Noise Tasks
+              </button>
+            }
           </div>
-        }
+        </div>
       </div>
 
-      @if (noiseTasks().length > 0) {
-        <button class="btn btn-clear" (click)="clearNoiseTasks()">
-          Clear Noise Tasks
-        </button>
-      }
-    </section>
+    </div>
 
+    <!-- Signal-to-Noise Ratio Dashboard -->
+    @if (metrics() && metrics()!.total > 0) {
+      <div class="row g-3 mt-4">
+        <div class="col-12">
+          <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+            <div class="card-body p-4">
+              <h3 class="text-center fw-bold mb-3">📊 Signal-to-Noise Ratio Analysis</h3>
+              
+              <!-- Summary Message -->
+              <div class="alert alert-primary border-start border-4 border-primary text-center fw-semibold">
+                {{ metrics()!.summaryMessage }}
+              </div>
+
+              <!-- Metrics Grid -->
+              <div class="row g-3">
+                
+                <!-- 1. Planned Ratio Meter -->
+                <div class="col-12 col-lg-4">
+                  <div class="card h-100 shadow-sm border">
+                    <div class="card-body">
+                      <h4 class="h6 fw-semibold mb-2">📋 Planned Ratio</h4>
+                      <p class="text-muted small mb-3">Task distribution at start of day</p>
+                      <div class="ratio-meter mb-3">
+                        <div class="d-flex rounded overflow-hidden shadow-sm" style="height: 40px;">
+                          <div class="signal-fill d-flex align-items-center justify-content-center text-white fw-bold" 
+                               [style.width.%]="metrics()!.plannedSignalPercent"
+                               style="background: var(--signal-color);">
+                            <span>{{ metrics()!.plannedSignalPercent.toFixed(0) }}%</span>
+                          </div>
+                          <div class="noise-fill d-flex align-items-center justify-content-center text-white fw-bold" 
+                               [style.width.%]="metrics()!.plannedNoisePercent"
+                               style="background: var(--noise-color);">
+                            <span>{{ metrics()!.plannedNoisePercent.toFixed(0) }}%</span>
+                          </div>
+                        </div>
+                        <div class="d-flex justify-content-around mt-2 small fw-semibold">
+                          <span class="text-success">🎯 Signal: {{ metrics()!.signalTotal }}</span>
+                          <span class="text-danger">📝 Noise: {{ metrics()!.noiseTotal }}</span>
+                        </div>
+                      </div>
+                      <p class="small p-2 rounded mb-0" 
+                         [class.bg-warning-subtle]="metrics()!.plannedRatioWarning.startsWith('⚠️')"
+                         [class.bg-success-subtle]="!metrics()!.plannedRatioWarning.startsWith('⚠️')"
+                         [class.text-warning-emphasis]="metrics()!.plannedRatioWarning.startsWith('⚠️')"
+                         [class.text-success-emphasis]="!metrics()!.plannedRatioWarning.startsWith('⚠️')">
+                        {{ metrics()!.plannedRatioWarning }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. Completion Progress Bars -->
+                <div class="col-12 col-lg-4">
+                  <div class="card h-100 shadow-sm border">
+                    <div class="card-body">
+                      <h4 class="h6 fw-semibold mb-2">✅ Completion Progress</h4>
+                      <p class="text-muted small mb-3">How well you're finishing what you planned</p>
+                      <div class="mb-3">
+                        <div class="mb-3">
+                          <div class="d-flex justify-content-between small fw-semibold mb-1">
+                            <span>🎯 Signal Tasks</span>
+                            <span class="text-muted">{{ metrics()!.signalDone }} / {{ metrics()!.signalTotal }}</span>
+                          </div>
+                          <div class="progress" style="height: 28px;">
+                            <div class="progress-bar fw-bold" 
+                                 role="progressbar" 
+                                 [style.width.%]="metrics()!.completionSignalPercent"
+                                 style="background: var(--signal-color);">
+                              {{ metrics()!.completionSignalPercent.toFixed(0) }}%
+                            </div>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="d-flex justify-content-between small fw-semibold mb-1">
+                            <span>📝 Noise Tasks</span>
+                            <span class="text-muted">{{ metrics()!.noiseDone }} / {{ metrics()!.noiseTotal }}</span>
+                          </div>
+                          <div class="progress" style="height: 28px;">
+                            <div class="progress-bar fw-bold" 
+                                 role="progressbar" 
+                                 [style.width.%]="metrics()!.completionNoisePercent"
+                                 style="background: var(--noise-color);">
+                              {{ metrics()!.completionNoisePercent.toFixed(0) }}%
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      @if (metrics()!.completionWarning) {
+                        <p class="small p-2 rounded mb-0" 
+                           [class.bg-warning-subtle]="metrics()!.completionWarning.startsWith('⚠️')"
+                           [class.bg-success-subtle]="!metrics()!.completionWarning.startsWith('⚠️')"
+                           [class.text-warning-emphasis]="metrics()!.completionWarning.startsWith('⚠️')"
+                           [class.text-success-emphasis]="!metrics()!.completionWarning.startsWith('⚠️')">
+                          {{ metrics()!.completionWarning }}
+                        </p>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Effective Ratio Visualization -->
+                <div class="col-12 col-lg-4">
+                  <div class="card h-100 shadow-sm border">
+                    <div class="card-body">
+                      <h4 class="h6 fw-semibold mb-2">⚡ Effective Productivity Ratio</h4>
+                      <p class="text-muted small mb-3">How your actual daily energy was spent</p>
+                      <div class="d-flex flex-column align-items-center">
+                        <div class="position-relative mb-3" style="width: 120px; height: 120px;">
+                          <div class="rounded-circle shadow w-100 h-100" 
+                               [style.background]="'conic-gradient(var(--signal-color) 0% ' + metrics()!.effectiveSignalPercent + '%, var(--noise-color) ' + metrics()!.effectiveSignalPercent + '% 100%)'">
+                          </div>
+                          <div class="position-absolute top-50 start-50 translate-middle bg-white rounded-circle shadow d-flex align-items-center justify-content-center" 
+                               style="width: 70px; height: 70px;">
+                            <div class="d-flex align-items-center gap-1 fw-bold small">
+                              <span class="text-success">{{ metrics()!.effectiveSignalPercent.toFixed(0) }}%</span>
+                              <span class="text-muted">:</span>
+                              <span class="text-danger">{{ metrics()!.effectiveNoisePercent.toFixed(0) }}%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="w-100">
+                          <div class="d-flex align-items-center gap-2 small p-2 bg-light rounded mb-2">
+                            <span>🎯</span>
+                            <span class="flex-grow-1 fw-semibold text-muted">Signal Done:</span>
+                            <span class="fw-bold">{{ metrics()!.signalDone }} / {{ metrics()!.total }}</span>
+                          </div>
+                          <div class="d-flex align-items-center gap-2 small p-2 bg-light rounded">
+                            <span>📝</span>
+                            <span class="flex-grow-1 fw-semibold text-muted">Noise Done:</span>
+                            <span class="fw-bold">{{ metrics()!.noiseDone }} / {{ metrics()!.total }}</span>
+                          </div>
+                        </div>
+                      </div>
+                      @if (metrics()!.effectiveRatioWarning) {
+                        <p class="small p-2 rounded mt-3 mb-0" 
+                           [class.bg-warning-subtle]="metrics()!.effectiveRatioWarning.startsWith('⚠️')"
+                           [class.bg-success-subtle]="!metrics()!.effectiveRatioWarning.startsWith('⚠️')"
+                           [class.text-warning-emphasis]="metrics()!.effectiveRatioWarning.startsWith('⚠️')"
+                           [class.text-success-emphasis]="!metrics()!.effectiveRatioWarning.startsWith('⚠️')">
+                          {{ metrics()!.effectiveRatioWarning }}
+                        </p>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
   </main>
 
   <!-- Footer -->
-  <footer class="app-footer">
-    @if (signalTasks().length > 0 || noiseTasks().length > 0) {
-      <button class="btn btn-reset" (click)="clearAllTasks()">
-        🔄 Start Fresh Day
-      </button>
-    }
-    <p class="footer-note">Tasks automatically reset each new day</p>
+  <footer class="bg-white border-top py-4 text-center mt-auto">
+    <div class="container">
+      @if (signalTasks().length > 0 || noiseTasks().length > 0) {
+        <button class="btn btn-success mb-3 w-100" style="max-width: 400px;" (click)="clearAllTasks()">
+          🔄 Start Fresh Day
+        </button>
+      }
+      <p class="text-muted small mb-0">Tasks automatically reset each new day</p>
+    </div>
   </footer>
 </div>

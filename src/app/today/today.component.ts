@@ -14,6 +14,7 @@ import { Task, RatioMetrics } from '../models/task.model';
 })
 export class TodayComponent implements OnInit {
   title = 'SignalNoise';
+  currentDate = new Date();
   
   // Signals for reactive state management
   signalTasks = signal<Task[]>([]);

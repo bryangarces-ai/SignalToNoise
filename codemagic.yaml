@@ -1,13 +1,9 @@
 workflows:
-  android-workflow:
-    name: Android Workflow
-    max_build_duration: 120
+  android-debug:
+    name: Android Debug Build
+    max_build_duration: 60
     instance_type: linux_x2
     environment:
-      android_signing:
-        - keystore_reference
-      groups:
-        - google_play
       vars:
         PACKAGE_NAME: "com.signalnoise.app"
       node: 18
@@ -19,25 +15,15 @@ workflows:
       - name: Build Angular app
         script: |
           npm run build
-      - name: Update dependencies and copy web assets to native project
+      - name: Sync Capacitor with Android
         script: |
           npx cap sync android
-      - name: Set Android version
-        script: |
-          BUILD_NUMBER=$(($(google-play get-latest-build-number \
-            --package-name "$PACKAGE_NAME" \
-            --tracks=alpha,beta,production) + 1))
-          cd android
-          ./gradlew bundleRelease \
-            -PversionCode=$BUILD_NUMBER \
-            -PversionName=1.0.$BUILD_NUMBER
-      - name: Build Android App Bundle
+      - name: Build Debug APK
         script: |
           cd android
-          ./gradlew bundleRelease
+          ./gradlew assembleDebug
     artifacts:
-      - android/app/build/outputs/**/*.aab
-      - android/app/build/outputs/**/*.apk
+      - android/app/build/outputs/apk/debug/*.apk
     publishing:
       email:
         recipients:
@@ -45,7 +31,3 @@ workflows:
         notify:
           success: true
           failure: true
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: internal
-        submit_as_draft: true

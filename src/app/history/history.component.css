@@ -1,0 +1,707 @@
+/* History Container */
+.history-container {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+}
+
+/* Header */
+.history-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-shadow: var(--shadow-md);
+}
+
+.history-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.back-button {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-add-date {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-add-date:hover {
+  background-color: white;
+  color: var(--primary-color);
+}
+
+/* Content */
+.history-content {
+  padding: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Empty State */
+.empty-history {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+}
+
+.empty-history p:first-child {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-subtitle {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Dates List */
+.dates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Date Card */
+.date-card {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.date-card.expanded {
+  box-shadow: var(--shadow-md);
+}
+
+/* Date Header */
+.date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+
+.date-header:hover {
+  background-color: var(--bg-color);
+}
+
+.date-info h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.date-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+.summary-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.signal-summary {
+  background-color: var(--signal-light);
+  color: var(--signal-color);
+}
+
+.noise-summary {
+  background-color: var(--noise-light);
+  color: var(--noise-color);
+}
+
+.expand-icon {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  transition: transform 0.3s;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Date Content */
+.date-content {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Task Sections in History */
+.task-section {
+  background-color: var(--bg-color);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.task-section.signal-section {
+  border-left: 4px solid var(--signal-color);
+}
+
+.task-section.noise-section {
+  border-left: 4px solid var(--noise-color);
+}
+
+.task-section h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.task-section .icon {
+  font-size: 1.25rem;
+}
+
+/* Tasks List */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 1.5rem 1rem;
+  font-style: italic;
+}
+
+/* Task Item */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  background-color: white;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.task-item:hover {
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.task-item.task-done {
+  opacity: 0.6;
+}
+
+.task-item.task-done .task-title {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+/* Custom Checkbox */
+.task-checkbox {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.task-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  height: 22px;
+  width: 22px;
+  border: 2px solid var(--border-color);
+  border-radius: 5px;
+  background-color: white;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-checkbox:hover .checkmark {
+  border-color: var(--primary-color);
+}
+
+.task-checkbox input[type="checkbox"]:checked ~ .checkmark {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.task-checkbox input[type="checkbox"]:checked ~ .checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Task Title */
+.task-title {
+  flex: 1;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+/* Delete Button */
+.btn-delete {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-delete:hover {
+  color: var(--signal-color);
+  transform: scale(1.2);
+}
+
+/* Date Actions */
+.date-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.5rem;
+}
+
+.btn-danger-outline {
+  background-color: transparent;
+  color: var(--signal-color);
+  border: 2px solid var(--signal-color);
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger-outline:hover {
+  background-color: var(--signal-color);
+  color: white;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 1.25rem;
+}
+
+/* Date Selector */
+.date-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.date-selector label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.date-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Task Input Section */
+.task-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.selected-date-display {
+  text-align: center;
+  padding: 0.75rem;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.selected-date-display strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.input-group h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.signal-input {
+  border-left: 4px solid var(--signal-color);
+  padding-left: 1rem;
+}
+
+.noise-input {
+  border-left: 4px solid var(--noise-color);
+  padding-left: 1rem;
+}
+
+.add-task-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.task-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.task-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:disabled {
+  background-color: var(--text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-success {
+  background-color: var(--noise-color);
+  color: white;
+  width: 100%;
+}
+
+.btn-success:hover {
+  background-color: #047857;
+}
+
+.modal-actions {
+  padding-top: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .history-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .btn-add-date {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .date-info h2 {
+    font-size: 1.125rem;
+  }
+
+  .date-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .history-header {
+    flex-wrap: wrap;
+  }
+
+  .history-header h1 {
+    width: 100%;
+    order: -1;
+    margin-bottom: 0.5rem;
+  }
+
+  .back-button,
+  .btn-add-date {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .modal-content {
+    max-height: 95vh;
+  }
+}
+
+/* ========== METRICS FOR HISTORY ========== */
+
+.date-metrics-summary {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.date-metrics-summary h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.metrics-summary-message {
+  background-color: white;
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--primary-color);
+  font-size: 0.9rem;
+}
+
+.metrics-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.compact-metric {
+  background-color: white;
+  padding: 0.75rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  min-width: 80px;
+}
+
+.metric-ratio {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.signal-text {
+  color: var(--signal-color);
+}
+
+.noise-text {
+  color: var(--noise-color);
+}
+
+.metric-separator {
+  color: var(--text-secondary);
+  font-weight: 700;
+  margin: 0 0.25rem;
+}
+
+.metric-detail {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+/* Responsive metrics for history */
+@media (min-width: 640px) {
+  .metrics-compact {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .metrics-compact {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .date-metrics-summary {
+    padding: 1.25rem;
+  }
+}
+
+/* Color variables for consistency */
+:root {
+  --signal-color: #22c55e;
+  --noise-color: #ef4444;
+}

@@ -1,0 +1,198 @@
+<div class="analytics-container">
+  <!-- Header -->
+  <header class="analytics-header">
+    <div class="header-content">
+      <h1 style="font-size: 1.5rem;">📊 Analytics Dashboard</h1>
+    </div>
+  </header>
+
+  <!-- Time Filter -->
+  <div class="filter-section">
+    <h2>Time Period</h2>
+    <div class="filter-buttons">
+      <button 
+        class="filter-btn"
+        [class.active]="timeFilter() === 'daily'"
+        (click)="changeFilter('daily')">
+        Daily (7 days)
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="timeFilter() === 'weekly'"
+        (click)="changeFilter('weekly')">
+        Weekly (4 weeks)
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="timeFilter() === 'monthly'"
+        (click)="changeFilter('monthly')">
+        Monthly (3 months)
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading analytics data...</p>
+  </div>
+
+  <!-- Summary Statistics -->
+  <div *ngIf="!loading() && metricsData().length > 0" class="summary-section">
+    <h2>Summary Statistics</h2>
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="card-icon">🎯</div>
+        <div class="card-content">
+          <div class="card-value">{{ getSummaryStats().avgPlannedSignal }}%</div>
+          <div class="card-label">Avg Planned Signal</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">✅</div>
+        <div class="card-content">
+          <div class="card-value">{{ getSummaryStats().avgCompletionSignal }}%</div>
+          <div class="card-label">Avg Signal Completion</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">⚡</div>
+        <div class="card-content">
+          <div class="card-value">{{ getSummaryStats().avgProductivitySignal }}%</div>
+          <div class="card-label">Avg Productivity</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="card-icon">📋</div>
+        <div class="card-content">
+          <div class="card-value">{{ getSummaryStats().completedTasks }}/{{ getSummaryStats().totalTasks }}</div>
+          <div class="card-label">Total Completed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div *ngIf="!loading() && metricsData().length > 0" class="charts-section">
+    <!-- Planned Ratio Chart -->
+    <div class="chart-container">
+      <div class="chart-wrapper">
+        <canvas #plannedRatioChart></canvas>
+      </div>
+      <div class="chart-description">
+        <p>📝 <strong>Planned Ratio:</strong> Shows how you planned your tasks (Signal vs Noise). Goal is 80:20.</p>
+      </div>
+    </div>
+
+    <!-- Completion Progress Chart -->
+    <div class="chart-container">
+      <div class="chart-wrapper">
+        <canvas #completionChart></canvas>
+      </div>
+      <div class="chart-description">
+        <p>📈 <strong>Completion Progress:</strong> Tracks how much of each task type you completed over time.</p>
+      </div>
+    </div>
+
+    <!-- Productivity Ratio Chart -->
+    <div class="chart-container">
+      <div class="chart-wrapper productivity-chart">
+        <canvas #productivityChart></canvas>
+      </div>
+      <div class="chart-description">
+        <p>⚡ <strong>Productivity Ratio:</strong> Shows your actual work distribution (completed tasks vs total tasks).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && metricsData().length === 0" class="empty-state">
+    <div class="empty-icon">📊</div>
+    <h2>No Data Available</h2>
+    <p>Start adding and completing tasks to see your analytics!</p>
+    <a routerLink="/" class="btn-primary">Go to Today</a>
+  </div>
+
+  <!-- Insights Section -->
+  <div *ngIf="!loading() && metricsData().length > 0" class="insights-section">
+    <h2>💡 Insights & Recommendations</h2>
+    <div class="insights-cards">
+      <div class="insight-card" 
+           [class.success]="getSummaryStats().avgPlannedSignalNum >= 75"
+           [class.warning]="getSummaryStats().avgPlannedSignalNum >= 60 && getSummaryStats().avgPlannedSignalNum < 75"
+           [class.danger]="getSummaryStats().avgPlannedSignalNum < 60">
+        <h3>Planning Quality</h3>
+        <p *ngIf="getSummaryStats().avgPlannedSignalNum >= 75">
+          🎉 Excellent! You're consistently planning with a good Signal-to-Noise ratio.
+        </p>
+        <p *ngIf="getSummaryStats().avgPlannedSignalNum >= 60 && getSummaryStats().avgPlannedSignalNum < 75">
+          👍 Good planning, but try to increase your Signal tasks to reach 80%.
+        </p>
+        <p *ngIf="getSummaryStats().avgPlannedSignalNum < 60">
+          💡 You're planning too many Noise tasks. Aim for 80% Signal tasks.
+        </p>
+      </div>
+
+      <div class="insight-card"
+           [class.success]="getSummaryStats().avgCompletionSignalNum >= 70"
+           [class.warning]="getSummaryStats().avgCompletionSignalNum >= 50 && getSummaryStats().avgCompletionSignalNum < 70"
+           [class.danger]="getSummaryStats().avgCompletionSignalNum < 50">
+        <h3>Execution Focus</h3>
+        <p *ngIf="getSummaryStats().avgCompletionSignalNum >= 70">
+          ✅ Great job! You're completing your Signal tasks consistently.
+        </p>
+        <p *ngIf="getSummaryStats().avgCompletionSignalNum >= 50 && getSummaryStats().avgCompletionSignalNum < 70">
+          📌 You're making progress, but focus more on Signal task completion.
+        </p>
+        <p *ngIf="getSummaryStats().avgCompletionSignalNum < 50">
+          ⚠️ You're struggling to complete Signal tasks. Try breaking them into smaller chunks.
+        </p>
+      </div>
+
+      <div class="insight-card"
+           [class.success]="getSummaryStats().completedTasks / getSummaryStats().totalTasks >= 0.7"
+           [class.warning]="getSummaryStats().completedTasks / getSummaryStats().totalTasks >= 0.5 && getSummaryStats().completedTasks / getSummaryStats().totalTasks < 0.7"
+           [class.danger]="getSummaryStats().completedTasks / getSummaryStats().totalTasks < 0.5">
+        <h3>Overall Productivity</h3>
+        <p *ngIf="getSummaryStats().completedTasks / getSummaryStats().totalTasks >= 0.7">
+          🚀 Outstanding! You're completing most of your planned tasks.
+        </p>
+        <p *ngIf="getSummaryStats().completedTasks / getSummaryStats().totalTasks >= 0.5 && getSummaryStats().completedTasks / getSummaryStats().totalTasks < 0.7">
+          💪 You're getting things done, but there's room for improvement.
+        </p>
+        <p *ngIf="getSummaryStats().completedTasks / getSummaryStats().totalTasks < 0.5">
+          🎯 Consider planning fewer tasks or breaking large tasks into smaller ones.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="shadow fixed-bottom" style="background-color: #f1f5f9; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+      <div class="row text-center g-0">
+        <div class="col-4">
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" 
+             class="nav-link d-flex flex-column align-items-center text-decoration-none py-1">
+            <span class="fs-6 mb-0">📋</span>
+            <span style="font-size: 0.7rem;" class="fw-semibold">Today</span>
+          </a>
+        </div>
+        <div class="col-4">
+          <a routerLink="/analytics" routerLinkActive="active" 
+             class="nav-link d-flex flex-column align-items-center text-decoration-none py-1">
+            <span class="fs-6 mb-0">📊</span>
+            <span style="font-size: 0.7rem;" class="fw-semibold">Analytics</span>
+          </a>
+        </div>
+        <div class="col-4">
+          <a routerLink="/history" routerLinkActive="active" 
+             class="nav-link d-flex flex-column align-items-center text-decoration-none py-1">
+            <span class="fs-6 mb-0">📚</span>
+            <span style="font-size: 0.7rem;" class="fw-semibold">History</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>

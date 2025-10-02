@@ -16,8 +16,9 @@ export class TaskService {
 
   /**
    * Check if it's a new day and archive current tasks to history
+   * Made public so components can call it manually for real-time day change detection
    */
-  private async checkAndResetForNewDay(): Promise<void> {
+  async checkAndResetForNewDay(): Promise<void> {
     const today = this.getTodayDate();
     const lastDate = await this.getLastDate();
 
@@ -63,17 +64,59 @@ export class TaskService {
     const { value } = await Preferences.get({ key: this.LAST_DATE_KEY });
     return value;
   }
-
+ 
   /**
-   * Get all tasks
+   * Get all tasks for today (including advance-planned tasks from history)
    */
   async getTasks(): Promise<Task[]> {
     try {
+      // Get current day's tasks
       const { value } = await Preferences.get({ key: this.TASKS_KEY });
-      if (value) {
-        return JSON.parse(value);
+      const currentTasks: Task[] = value ? JSON.parse(value) : [];
+      
+      // Get today's date
+      const today = this.getTodayDate();
+      
+      // Check if there are advance-planned tasks for today in history
+      const history = await this.getHistory();
+      const advanceTasks: Task[] = history[today] || [];
+      
+      // If there are advance tasks and no current tasks, migrate them
+      if (advanceTasks.length > 0 && currentTasks.length === 0) {
+        console.log(`Found ${advanceTasks.length} advance-planned tasks for today. Migrating...`);
+        await this.saveTasks(advanceTasks);
+        
+        // Remove from history since they're now current
+        delete history[today];
+        await this.saveHistory(history);
+        
+        return advanceTasks;
       }
-      return [];
+      
+      // If there are both advance and current tasks, merge them (avoid duplicates)
+      if (advanceTasks.length > 0 && currentTasks.length > 0) {
+        console.log('Merging advance-planned tasks with current tasks...');
+        const existingIds = new Set(currentTasks.map(t => t.id));
+        const newAdvanceTasks = advanceTasks.filter(t => !existingIds.has(t.id));
+        
+        if (newAdvanceTasks.length > 0) {
+          const mergedTasks = [...currentTasks, ...newAdvanceTasks];
+          await this.saveTasks(mergedTasks);
+          
+          // Update history to remove merged tasks
+          const remainingTasks = advanceTasks.filter(t => existingIds.has(t.id));
+          if (remainingTasks.length > 0) {
+            history[today] = remainingTasks;
+          } else {
+            delete history[today];
+          }
+          await this.saveHistory(history);
+          
+          return mergedTasks;
+        }
+      }
+      
+      return currentTasks;
     } catch (error) {
       console.error('Error getting tasks:', error);
       return [];
@@ -216,7 +259,7 @@ export class TaskService {
   /**
    * Save history
    */
-  private async saveHistory(history: { [date: string]: Task[] }): Promise<void> {
+  async saveHistory(history: { [date: string]: Task[] }): Promise<void> {
     try {
       await Preferences.set({
         key: this.HISTORY_KEY,

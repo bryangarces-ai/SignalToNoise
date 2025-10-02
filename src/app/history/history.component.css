@@ -38,3 +38,34 @@
     margin: 0.5rem;
   }
 }
+
+/* Bottom Navigation Styles */
+.fixed-bottom {
+  z-index: 1030;
+}
+
+.nav-link {
+  color: #6c757d;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #2563eb;
+  transform: translateY(-2px);
+}
+
+.nav-link.active {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.nav-link.active span:first-child {
+  transform: scale(1.2);
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+/* Add padding to main content to account for fixed bottom nav */
+main {
+  padding-bottom: 80px !important;
+}

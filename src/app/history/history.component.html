@@ -2,10 +2,9 @@
   <!-- Header -->
   <header class="text-white py-3 shadow-sm" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);">
     <div class="container">
-      <div class="d-flex justify-content-between align-items-center">
-        <a routerLink="/" class="btn btn-light btn-sm">← Back</a>
-        <h1 class="h3 mb-0 text-white">Task History</h1>
-        <button class="btn btn-light btn-sm" (click)="openDatePicker()">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h1 class="h5 mb-0 text-white">📚 Task History</h1>
+        <button class="btn btn-light btn-sm" style="font-size: 0.8rem;" (click)="openDatePicker()">
           📅 Add Tasks
         </button>
       </div>
@@ -259,4 +258,33 @@
       </div>
     </div>
   }
+
+  <!-- Bottom Navigation -->
+  <nav class="shadow fixed-bottom" style="background-color: #f1f5f9; border-top: 1px solid #e2e8f0;">
+    <div class="container">
+      <div class="row text-center g-0">
+        <div class="col-4">
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" 
+             class="nav-link d-flex flex-column align-items-center text-decoration-none py-1">
+            <span class="fs-6 mb-0">📋</span>
+            <span style="font-size: 0.7rem;" class="fw-semibold">Today</span>
+          </a>
+        </div>
+        <div class="col-4">
+          <a routerLink="/analytics" routerLinkActive="active" 
+             class="nav-link d-flex flex-column align-items-center text-decoration-none py-1">
+            <span class="fs-6 mb-0">📊</span>
+            <span style="font-size: 0.7rem;" class="fw-semibold">Analytics</span>
+          </a>
+        </div>
+        <div class="col-4">
+          <a routerLink="/history" routerLinkActive="active" 
+             class="nav-link d-flex flex-column align-items-center text-decoration-none py-1">
+            <span class="fs-6 mb-0">📚</span>
+            <span style="font-size: 0.7rem;" class="fw-semibold">History</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
 </div>
